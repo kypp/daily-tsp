@@ -27,3 +27,11 @@ Dla danego grafu G:
 Fazy optymalizacji:
 3 (znalezienie możliwie optymalnego cyklu)
 5 (znalezienie możliwie optymalnego podziału na dni)
+
+Bardziej pseudokodowo:
+
+    solve_tsp_daily(G, M, tsp_solver):
+      1. preprocessing(G, M) -> G'
+      2. solve(G', tsp_solver) -> R'
+      3. reconstruct(G, R') -> R
+      4. divide(R, M) -> D
