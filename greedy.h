@@ -8,7 +8,8 @@ struct solve_tsp_greedy {
 		for (city_t c=0; c < G.size(); c++)
 			unvisited_cities.insert(c);
 
-		city_t last_city = 0;
+		city_t first_city = 0;
+		city_t last_city = first_city;
 		route_t route;
 		route.push_back(last_city);
 		unvisited_cities.erase(last_city);
@@ -28,6 +29,7 @@ struct solve_tsp_greedy {
 			last_city = closest_city;
 		}
 
+		route.push_back(first_city);
 		return route;
 	}
 };
