@@ -1,5 +1,7 @@
 #include "types.h"
+#include "daily_tsp_helpers.h"
 #include <iterator>
+#include <limits>
 
 graph_t preprocess(graph_t G, distance_t M, predecessor_matrix_t & P)
 {
@@ -9,9 +11,16 @@ graph_t preprocess(graph_t G, distance_t M, predecessor_matrix_t & P)
 			if (distance > M)
 				distance = std::numeric_limits<distance_t>::max();
 		}
+
+	auto V = G.size();
+
+	// initialize shortest paths
+	for (city_t i = 0; i < V; i++)
+	for (city_t j = 0; j < V; j++) {
+		P[i][j] = i;
+	}	
 		
 	// compute shortest paths
-	auto V = G.size();
 	for (city_t k = 0; k < V; k++)
 		for (city_t i = 0; i < V; i++)
 			for (city_t j = 0; j < V; j++) 
@@ -26,6 +35,8 @@ graph_t preprocess(graph_t G, distance_t M, predecessor_matrix_t & P)
 
 route_t reconstruct(const graph_t & G, route_t route, const predecessor_matrix_t & P)
 {
+	return route;
+	
 	route_t new_route;
 	for (auto i=std::next(route.begin()); i != route.end(); i++)
 	{
@@ -33,8 +44,8 @@ route_t reconstruct(const graph_t & G, route_t route, const predecessor_matrix_t
 		auto city_b = *i;
 
 		while (city_a != city_b) {
-			new_route.push_back(city_a);
 			city_a = P[city_a][city_b];
+			new_route.push_back(city_a);
 		}
 	}
 	return new_route;
@@ -43,10 +54,10 @@ route_t reconstruct(const graph_t & G, route_t route, const predecessor_matrix_t
 template<class Solver, class Divider>
 days_t solve_tsp_daily(graph_t G, distance_t M, Solver tsp_solver, Divider divider)
 {
-	predecessor_matrix_t P;
+	predecessor_matrix_t P = create_vector_2d<city_t>(G.size());
 	graph_t Gprime = preprocess(G, M, P);
 	route_t Rprime = tsp_solver(G);
 	route_t R = reconstruct(G, Rprime, P);
-	days_t D = divider(R, M);
+	days_t D = divider(G, R, M);
 	return D;
 }
