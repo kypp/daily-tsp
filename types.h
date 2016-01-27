@@ -8,3 +8,5 @@ using distance_t = float;
 using graph_t = std::vector<std::vector<distance_t>>;
 using days_t = std::vector<route_t>;
 using predecessor_matrix_t = std::vector<std::vector<city_t>>;
+
+using point2D=std::pair<double,double>;
