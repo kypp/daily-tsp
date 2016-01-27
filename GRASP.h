@@ -5,7 +5,7 @@
 #include <algorithm>
 #include <random>
 
-#define REPEAT_NO   5
+#define REPEAT_NO   30
 
 struct solve_tsp_GRASP {
     //UWAGA: zakładam, że G[a][b]=G[b][a]
