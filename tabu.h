@@ -3,9 +3,72 @@
 #include "greedy.h"
 #include <set>
 
-const int MAX_ITERS = 10000;
+
+struct solve_tsp_tabu {
+	const int MAX_ITERS = 10000;
+	solve_tsp_tabu(int max_iters = 10000) : MAX_ITERS{max_iters}
+	{
+
+	}
+
+	route_t operator()(const graph_t & G) {
+		auto initial_solution = solve_tsp_greedy{}(G);
+		
+		auto cost = [&G](const routev_t & route) {
+			distance_t sum{ 0 };
+			for (int i = 0; i < route.size() - 1; i++)
+				sum += G[route[i]][route[i + 1]];
+			return sum;
+		};
+
+		routev_t best_route{ initial_solution.begin(), initial_solution.end() };
+		distance_t best_cost = cost(best_route);
+		std::set<routev_t> tabu_list;
+		tabu_list.insert(best_route);
+		
+		routev_t current_route{ best_route };
+
+		int iter = 0;
+		while (iter < MAX_ITERS) {
+			iter++;
+			routev_t current_candidate;
+			distance_t current_distance = std::numeric_limits<distance_t>::max();
+
+			for (int i = 0; i < current_route.size() - 1; i++) {
+				routev_t new_route = current_route;
+				std::swap(new_route[i], new_route[i + 1]);
+				if (tabu_list.count(new_route) == 1)
+					continue;
+				auto new_distance = cost(new_route);
+				if (new_distance < current_distance) {
+					current_candidate = new_route;
+					current_distance = new_distance;
+				}
+			}
+
+			if (current_candidate.empty())
+				tabu_list.clear();
+			else {
+				current_route = current_candidate;
+				tabu_list.insert(current_route);
+
+				if (current_distance < best_cost) {
+					best_cost = current_distance;
+					best_route = current_route;
+				}
+			}
+		}
+		return{ best_route.begin(), best_route.end() };
+	}
+};
 
 struct divide_route_tabu {
+	const int MAX_ITERS = 10000;
+	divide_route_tabu(int max_iters = 10000) : MAX_ITERS{ max_iters }
+	{
+
+	}
+
 	days_t operator()(const graph_t & G, route_t route, distance_t M)
 	{
 		graph_t subdistances = create_graph(route.size());
