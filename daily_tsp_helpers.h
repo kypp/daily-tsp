@@ -1,3 +1,4 @@
+#pragma once
 #include "types.h"
 #include <fstream>
 #include <iostream>
@@ -49,7 +50,7 @@ std::pair<distance_t,distance_t> calculate_cost(const days_t & days_route, const
 		total_cost += day_cost;
 	}
 
-	return {total_cost, total_cost*total_cost + total_cost_days};
+	return {total_cost, total_cost_days};
 }
 
 void print_route(days_t days_route)
